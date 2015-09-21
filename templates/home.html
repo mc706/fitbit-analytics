@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+    {% if not session.fitbit_keys %}
+
+        <div class="container-fluid">
+            <p class="lead">Not Logged In...</p>
+
+            <div class="row-fluid">
+                <div class="span2">
+                    <a href="{{ url_for('login') }}" class="btn">Login</a>
+                </div>
+                <div class="span10">
+                    <p>In order to generate graphs you need to grant Fitboard permission to your Fitbit data.</p>
+
+                    <p>Fitboard connects your Fitbit to your Status Board using the Fitbit provided <abbr
+                            title="Application Programming Interface">API</abbr>. Fitbit provides your data to Fitboard
+                        using the secure, open standard <a href="http://oauth.net" class="href">OAUTH</a>.</p>
+                    At anytime you can revoke Fitboard's <a href="http://www.fitbit.com/user/profile/apps" class="href">access</a>
+                    and remove the stored OAUTH tokens from Fitboard (your graphs will stop working).
+                </div>
+            </div>
+        </div>
+
+    {% else %}
+        <div class="row-fluid">
+            <div class="span2">
+                <img src="{{ session.user_profile.user.avatar }}" class="img-polaroid" alt="Image">
+            </div>
+            <div class="span6">
+                <h2>{{ session.user_profile.user.displayName }}'s Fitbit Summary</h2>
+                <ul>
+                    <li>Battery Level: {{ session.device_info.0.battery }}</li>
+                    <li>Last Sync: {{ session.device_info.0.lastSyncTime|natural_time|capitalize }}</li>
+                    <li>Fitbit Type: {{ session.device_info.0.deviceVersion }}</li>
+                </ul>
+            </div>
+        </div>
+        <hr>
+
+        <div class="row-fluid">
+            <div class="alert alert-info alert-block">
+                <button type="button" class="close" data-dismiss="alert"></button>
+                <i class="icon-bell icon4x "></i> The buttons below will only work on an iPad with Statusboard installed
+            </div>
+        </div>
+
+
+        <div class="row-fluid">
+            <div class="span6">
+                <h4>Status</h4>
+
+                <div class="btn-toolbar">
+                    <div class="btn-group">
+                        <a class="btn btn-small"
+                           href="panicboard://?url={{ url_for('get_dashboard', _external=True, user_id=session.fitbit_keys.0) }}&panel=table&sourceDisplayName=fitboard.me">Battery
+                            and Sync</a>
+                    </div>
+                </div>
+                <hr>
+
+                <h4>Activity Level</h4>
+
+                <div class="btn-toolbar">
+                    <div class="btn-group">
+                        {%- for period, disp_period in timeseries -%}
+                            <a class="btn btn-small"
+                               href="panicboard://?url={{ url_for('get_levelsummary', _external=True, user_id=session.fitbit_keys.0, period=period) }}&panel=graph&sourceDisplayName=fitboard.me">{{ disp_period }}</a>
+                        {% endfor %}
+                    </div>
+                </div>
+                <hr>
+
+                {%- for chart, chart_name in col1_charts -%}
+                    <h4>{{ chart_name }}</h4>
+                    <div class="btn-toolbar">
+                        <div class="btn-group">
+                            {%- for period, disp_period in timeseries -%}
+                                <a class="btn btn-small"
+                                   href="panicboard://?url={{ url_for('get_activity', _external=True, user_id=session.fitbit_keys.0, resource=chart, period=period) }}&panel=graph&sourceDisplayName=fitboard.me">{{ disp_period }}</a>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <hr>
+                {% endfor %}
+            </div>
+
+            <div class="span6">
+                {%- for chart, chart_name in col2_charts -%}
+                    <h4>{{ chart_name }}</h4>
+                    <div class="btn-toolbar">
+                        <div class="btn-group">
+                            {%- for period, disp_period in timeseries -%}
+                                <a class="btn btn-small"
+                                   href="panicboard://?url={{ url_for('get_activity', _external=True, user_id=session.fitbit_keys.0, resource=chart, period=period) }}&panel=graph&sourceDisplayName=fitboard.me">{{ disp_period }}</a>
+                            {% endfor %}
+
+                        </div>
+                    </div>
+                    <hr>
+                {% endfor %}
+            </div>
+        </div>
+
+    {% endif %}
+{% endblock %}
