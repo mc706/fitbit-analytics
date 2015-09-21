@@ -8,9 +8,11 @@ This project adheres to [Semantic Versioning](http://semver.org/) and [Keep a Ch
 
 ### New
 
+* Added steps page
+
 ### Changes
 
-### Fixes
+* Added links to `View Detail` Links on homepage
 
 
 ## [0.0.3] - 2015-09-21
