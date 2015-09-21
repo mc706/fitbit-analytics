@@ -1,26 +1,26 @@
 {
-  "name": "fitbitAnalytics",
-  "version": "0.0.0",
-  "description": "Deep Dive Statstical Analysis of Fitbit Data",
-  "main": "/",
-  "scripts": {
-    "test": "fab test"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/mc706/fitbitanalytics"
-  },
-  "keywords": [
-    "fitbit",
-    "analytics"
-  ],
-  "author": "mc706",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/mc706/fitbitanalytics/issues"
-  },
-  "homepage": "https://github.com/mc706/fitbitanalytics",
-  "dependencies": {
-    "bower": "^1.5.2"
-  }
+    "license": "ISC",
+    "name": "fitbitAnalytics",
+    "repository": {
+        "url": "https://github.com/mc706/fitbitanalytics",
+        "type": "git"
+    },
+    "author": "mc706",
+    "bugs": {
+        "url": "https://github.com/mc706/fitbitanalytics/issues"
+    },
+    "version": "0.0.1",
+    "dependencies": {
+        "bower": "^1.5.2"
+    },
+    "scripts": {
+        "test": "fab test"
+    },
+    "keywords": [
+        "fitbit",
+        "analytics"
+    ],
+    "main": "/",
+    "homepage": "https://github.com/mc706/fitbitanalytics",
+    "description": "Deep Dive Statstical Analysis of Fitbit Data"
 }

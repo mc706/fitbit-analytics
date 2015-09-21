@@ -1,29 +1,29 @@
 {
-  "name": "fitbitAnalytics",
-  "version": "0.0.0",
-  "description": "Deep Dive Statistical Analysis of Fitbit Data",
-  "moduleType": [
-    "es6",
-    "globals"
-  ],
-  "keywords": [
-    "fitbit",
-    "anayltics"
-  ],
-  "authors": [
-    "mc706"
-  ],
-  "license": "MIT",
-  "homepage": "www.fitbitanalytics.com",
-  "ignore": [
-    "**/.*",
-    "node_modules",
-    "bower_components",
-    "test",
-    "tests"
-  ],
-  "dependencies": {
-    "angular": "~1.4.6",
-    "bootstrap": "~3.3.5"
-  }
+    "name": "fitbitAnalytics",
+    "license": "MIT",
+    "ignore": [
+        "**/.*",
+        "node_modules",
+        "bower_components",
+        "test",
+        "tests"
+    ],
+    "version": "0.0.1",
+    "dependencies": {
+        "bootstrap": "~3.3.5",
+        "angular": "~1.4.6"
+    },
+    "authors": [
+        "mc706"
+    ],
+    "keywords": [
+        "fitbit",
+        "anayltics"
+    ],
+    "moduleType": [
+        "es6",
+        "globals"
+    ],
+    "homepage": "www.fitbitanalytics.com",
+    "description": "Deep Dive Statistical Analysis of Fitbit Data"
 }
