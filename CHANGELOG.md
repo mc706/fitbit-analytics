@@ -9,10 +9,12 @@ This project adheres to [Semantic Versioning](http://semver.org/) and [Keep a Ch
 ### New
 
 * Migrated to SB Admin Theme
+* Added Highcharts
+* Built out homepage/dashboard
 
 ### Changes
 
-### Fixes
+* Removed Angular
 
 
 ## [0.0.1] - 2015-09-21
