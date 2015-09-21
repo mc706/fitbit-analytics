@@ -8,9 +8,7 @@ This project adheres to [Semantic Versioning](http://semver.org/) and [Keep a Ch
 
 ### New
 
-### Changes
-
-### Fixes
+* Added Weight Chart to Homepage
 
 
 ## [0.0.2] - 2015-09-21

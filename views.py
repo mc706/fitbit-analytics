@@ -17,6 +17,10 @@ MY_CONSUMER_KEY = SECRETS.get("CONSUMER_KEY", False) or os.environ.get('CONSUMER
 MY_CONSUMER_SECRET = SECRETS.get("CONSUMER_SECRET", False) or os.environ.get('CONSUMER_SECRET')
 MY_EMAIL_ADDRESS = SECRETS.get("EMAIL_USER", False) or os.environ.get('EMAIL_USER')
 
+CONVERSION = {
+    "en_US": "Pounds"
+}
+
 # Setup
 # ----------------------------
 oauth = OAuth()
@@ -63,7 +67,8 @@ def index():
         diff = "-" + str(diff)
     sleep = get_activity(user_id, 'timeInBed',  period='1d', return_as='raw')[0]['value']
     chartdata = get_activity(user_id, 'steps', period='1w', return_as='raw')
-    return render_template('home.html', steps=steps, calories=calories, weight=diff, sleep=sleep, chartdata=chartdata)
+    weight_unit = CONVERSION[session['user_profile']['user']['weightUnit']]
+    return render_template('home.html', steps=steps, calories=calories, weight=diff, sleep=sleep, chartdata=chartdata, weights=weights, weight_unit=weight_unit)
 
 
 @app.route('/profile')

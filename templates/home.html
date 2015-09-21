@@ -118,7 +118,18 @@
             </div>
         </div>
     </div>
-    <pre>{{ chartdata }}</pre>
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title"><i class="fa fa-bar-chart-o fa-fw"></i> Weight Past 7 Days</h3>
+                </div>
+                <div class="panel-body">
+                    <div id="highchart-weight" class="chart"></div>
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock %}
 
 {% block scripts %}
@@ -151,6 +162,35 @@
                 series: [{
                     name: 'Steps',
                     data: [{% for step in chartdata%}{{ step.value }}{% if not loop.last %},{% endif %}{% endfor %}]
+                }]
+            });
+            $('#highchart-weight').highcharts({
+                title: {
+                    text: 'Daily Average Weight',
+                    x: -20 //center
+                },
+                xAxis: {
+                    categories: [{% for step in weights%}"{{ step.dateTime }}"{% if not loop.last %},{% endif %}{% endfor %}]
+                },
+                yAxis: {
+                    title: {
+                        text: '{{ weight_unit }}'
+                    },
+                    plotLines: [{
+                        value: 0,
+                        width: 1,
+                        color: '#808080'
+                    }]
+                },
+                legend: {
+                    layout: 'vertical',
+                    align: 'right',
+                    verticalAlign: 'middle',
+                    borderWidth: 0
+                },
+                series: [{
+                    name: 'Weight',
+                    data: [{% for step in weights%}{{ step.value }}{% if not loop.last %},{% endif %}{% endfor %}]
                 }]
             });
         });
