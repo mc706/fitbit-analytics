@@ -24,8 +24,6 @@ def freeze():
 def bootstrap():
     """Sets up certain environment commands"""
     local('git config commit.template templates/git-commit-template.txt')
-    from main import db
-    db.create_all()
 
 def _get_current_version():
     with open('bower.json', 'r') as bower_file:
@@ -107,3 +105,7 @@ def prepare_assets():
 def compile_scss():
     with lcd('static/assets/styles'):
         local('python -mscss styles.scss > styles.css')
+
+
+def start():
+    local("python main.py")
