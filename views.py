@@ -65,10 +65,11 @@ def index():
         diff = "+" + str(diff)
     else:
         diff = "-" + str(diff)
-    sleep = get_activity(user_id, 'timeInBed',  period='1d', return_as='raw')[0]['value']
+    sleep = get_activity(user_id, 'timeInBed', period='1d', return_as='raw')[0]['value']
     chartdata = get_activity(user_id, 'steps', period='1w', return_as='raw')
     weight_unit = CONVERSION[session['user_profile']['user']['weightUnit']]
-    return render_template('home.html', steps=steps, calories=calories, weight=diff, sleep=sleep, chartdata=chartdata, weights=weights, weight_unit=weight_unit)
+    return render_template('home.html', steps=steps, calories=calories, weight=diff, sleep=sleep, chartdata=chartdata,
+                           weights=weights, weight_unit=weight_unit)
 
 
 @app.route('/profile')
@@ -82,21 +83,32 @@ def profile():
 def steps():
     if not session.get('fibit_keys', False):
         redirect(url_for('intro'))
-    return render_template('home.html')
+    user_id = session['user_profile']['user']['encodedId']
+    weight_unit = CONVERSION[session['user_profile']['user']['weightUnit']]
+    weights = get_connector(user_id).get_bodyweight(user_id=user_id, period='1m')['weight']
+    chartdata = group_by_day(weights)
+    return render_template('steps.html', weights=weights, weight_unit=weight_unit, chartdata=chartdata)
+
+
+@app.route('/calories')
+def calories():
+    if not session.get('fibit_keys', False):
+        redirect(url_for('intro'))
+    return render_template('calories.html')
 
 
 @app.route('/weight')
 def weight():
     if not session.get('fibit_keys', False):
         redirect(url_for('intro'))
-    return render_template('home.html')
+    return render_template('weight.html')
 
 
 @app.route('/sleep')
 def sleep():
     if not session.get('fibit_keys', False):
         redirect(url_for('intro'))
-    return render_template('home.html')
+    return render_template('sleep.html')
 
 
 @app.route('/settings')
@@ -447,3 +459,16 @@ def output_json(dp, resource, datasequence_color, graph_type):
     })
 
     return graph
+
+
+def group_by_day(data):
+    grouped = []
+    days = {}
+    for point in data:
+        days.setdefault(point['date'],[]).append(point['weight'])
+    for key in sorted(days):
+        min_val = min(days[key])
+        max_val = max(days[key])
+        avg_val = sum(days[key])/len(days[key])
+        grouped.append({"day": key, "weight": avg_val, "error": [min_val, max_val]})
+    return grouped
