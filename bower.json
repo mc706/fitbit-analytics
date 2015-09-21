@@ -1,6 +1,7 @@
 {
-    "name": "fitbitAnalytics",
+    "version": "0.0.2",
     "license": "MIT",
+    "description": "Deep Dive Statistical Analysis of Fitbit Data",
     "ignore": [
         "**/.*",
         "node_modules",
@@ -8,10 +9,10 @@
         "test",
         "tests"
     ],
-    "version": "0.0.1",
     "dependencies": {
+        "font-awesome": "fontawesome#~4.4.0",
         "bootstrap": "~3.3.5",
-        "angular": "~1.4.6"
+        "highcharts": "~4.1.8"
     },
     "authors": [
         "mc706"
@@ -25,5 +26,5 @@
         "globals"
     ],
     "homepage": "www.fitbitanalytics.com",
-    "description": "Deep Dive Statistical Analysis of Fitbit Data"
+    "name": "fitbitAnalytics"
 }

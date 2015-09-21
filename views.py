@@ -48,17 +48,62 @@ def page_not_found(e):
 
 @app.route('/')
 def index():
+    if not session.get('fibit_keys', False):
+        redirect(url_for('intro'))
+    user_id = session['user_profile']['user']['encodedId']
+    steps = get_activity(user_id, 'steps', period='1d', return_as='raw')[0]['value']
+    calories = get_activity(user_id, 'calories', period='1d', return_as='raw')[0]['value']
+    weights = get_activity(user_id, 'weight', period='1w', return_as='raw')
+    weight0 = weights[0]['value']
+    weightn = weights[-1]['value']
+    diff = (float(weight0) - float(weightn))
+    if diff > 0:
+        diff = "+" + str(diff)
+    else:
+        diff = "-" + str(diff)
+    sleep = get_activity(user_id, 'timeInBed',  period='1d', return_as='raw')[0]['value']
+    chartdata = get_activity(user_id, 'steps', period='1w', return_as='raw')
+    return render_template('home.html', steps=steps, calories=calories, weight=diff, sleep=sleep, chartdata=chartdata)
+
+
+@app.route('/profile')
+def profile():
+    if not session.get('fibit_keys', False):
+        redirect(url_for('intro'))
+    return render_template('profile.html')
+
+
+@app.route('/steps')
+def steps():
+    if not session.get('fibit_keys', False):
+        redirect(url_for('intro'))
     return render_template('home.html')
 
 
-@app.route('/about')
-def about():
-    return render_template('about.html')
+@app.route('/weight')
+def weight():
+    if not session.get('fibit_keys', False):
+        redirect(url_for('intro'))
+    return render_template('home.html')
 
 
-@app.route('/charts')
-def charts():
-    return render_template('charts.html')
+@app.route('/sleep')
+def sleep():
+    if not session.get('fibit_keys', False):
+        redirect(url_for('intro'))
+    return render_template('home.html')
+
+
+@app.route('/settings')
+def settings():
+    if not session.get('fibit_keys', False):
+        redirect(url_for('intro'))
+    return render_template('home.html')
+
+
+@app.route('/intro')
+def intro():
+    return render_template('intro.html')
 
 
 @fitbit_app.tokengetter
@@ -101,7 +146,7 @@ def oauth_authorized(resp):
     session['user_profile'] = get_user_profile(user_id)
     session['device_info'] = get_device_info(user_id)
 
-    return redirect(url_for('charts'))
+    return redirect(url_for('index'))
 
 
 #
@@ -135,8 +180,6 @@ def logout():
 
 # API
 # ----------------------------
-
-
 @app.route('/dash/<user_id>/')
 @app.route('/dash/<user_id>')
 def get_dashboard(user_id):

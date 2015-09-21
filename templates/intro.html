@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+    <div class="container-fluid">
+        <p class="lead">Not Logged In...</p>
+
+        <div class="row-fluid">
+            <div class="span2">
+                <a href="{{ url_for('login') }}" class="btn">Login</a>
+            </div>
+            <div class="span10">
+                <p>In order to generate graphs you need to grant Fitboard permission to your Fitbit data.</p>
+
+                <p>Fitboard connects your Fitbit to your Status Board using the Fitbit provided <abbr
+                        title="Application Programming Interface">API</abbr>. Fitbit provides your data to Fitboard
+                    using the secure, open standard <a href="http://oauth.net" class="href">OAUTH</a>.</p>
+                At anytime you can revoke Fitboard's <a href="http://www.fitbit.com/user/profile/apps" class="href">access</a>
+                and remove the stored OAUTH tokens from Fitboard (your graphs will stop working).
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
