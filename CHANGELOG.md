@@ -13,6 +13,25 @@ This project adheres to [Semantic Versioning](http://semver.org/) and [Keep a Ch
 ### Fixes
 
 
+## [0.0.4] - 2015-09-22
+---
+
+### New
+
+* Added steps page
+* Added added error chart
+* Added numpy
+* Added year cycle and time period chart
+* Stubbed out rest of pages
+
+### Changes
+
+* Added links to `View Detail` Links on homepage
+
+### Fixes
+
+* Added float truncation for significant figures
+
 ## [0.0.3] - 2015-09-21
 ---
 
@@ -45,6 +64,7 @@ This project adheres to [Semantic Versioning](http://semver.org/) and [Keep a Ch
 * Setup Flask App
 * Built Basic Templates
 * Setup NPM and Bower
+
 
 
 

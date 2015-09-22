@@ -5,8 +5,10 @@ from models import User
 from random import choice
 from flask_oauthlib.client import OAuth
 import os
+import json
 import humanize
 import dateutil.parser
+from numpy import average
 
 try:
     from secrets import keys as SECRETS
@@ -65,10 +67,11 @@ def index():
         diff = "+" + str(diff)
     else:
         diff = "-" + str(diff)
-    sleep = get_activity(user_id, 'timeInBed',  period='1d', return_as='raw')[0]['value']
+    sleep = get_activity(user_id, 'timeInBed', period='1d', return_as='raw')[0]['value']
     chartdata = get_activity(user_id, 'steps', period='1w', return_as='raw')
     weight_unit = CONVERSION[session['user_profile']['user']['weightUnit']]
-    return render_template('home.html', steps=steps, calories=calories, weight=diff, sleep=sleep, chartdata=chartdata, weights=weights, weight_unit=weight_unit)
+    return render_template('home.html', steps=steps, calories=calories, weight=diff, sleep=sleep, chartdata=chartdata,
+                           weights=weights, weight_unit=weight_unit)
 
 
 @app.route('/profile')
@@ -82,21 +85,44 @@ def profile():
 def steps():
     if not session.get('fibit_keys', False):
         redirect(url_for('intro'))
-    return render_template('home.html')
+    user_id = session['user_profile']['user']['encodedId']
+    weight_unit = CONVERSION[session['user_profile']['user']['weightUnit']]
+    weights = get_connector(user_id).get_bodyweight(user_id=user_id, period='1m')['weight']
+    chartdata = group_by_day(weights)
+    return render_template('steps.html', weights=weights, weight_unit=weight_unit, chartdata=chartdata)
+
+
+@app.route('/calories')
+def calories():
+    if not session.get('fibit_keys', False):
+        redirect(url_for('intro'))
+    return render_template('calories.html')
 
 
 @app.route('/weight')
 def weight():
     if not session.get('fibit_keys', False):
         redirect(url_for('intro'))
-    return render_template('home.html')
+    user_id = session['user_profile']['user']['encodedId']
+    weight_unit = CONVERSION[session['user_profile']['user']['weightUnit']]
+    weights = get_connector(user_id).get_bodyweight(user_id=user_id, period='1m')['weight']
+    chartdata = group_by_day(weights)
+    all_weight = clean_max(get_activity(user_id, 'weight', period='max', return_as='raw'))
+    year_weight = get_activity(user_id, 'weight', period='1y', return_as='raw')
+    month_weight = get_activity(user_id, 'weight', period='1m', return_as='raw')
+    week_weight = get_activity(user_id, 'weight', period='1w', return_as='raw')
+    boxplot = group_by_month(all_weight)
+    yearcycle = get_yearcycle(all_weight)
+    periods = get_periods(all_weight, year_weight, month_weight, week_weight)
+    return render_template('weight.html', weights=weights, weight_unit=weight_unit, chartdata=chartdata,
+                           all_weight=all_weight, boxplot=boxplot, yearcycle=yearcycle, periods=periods)
 
 
 @app.route('/sleep')
 def sleep():
     if not session.get('fibit_keys', False):
         redirect(url_for('intro'))
-    return render_template('home.html')
+    return render_template('sleep.html')
 
 
 @app.route('/settings')
@@ -128,7 +154,7 @@ def login():
 @fitbit_app.authorized_handler
 def oauth_authorized(resp):
     """ Authorize using OAUTH """
-    next_url = request.args.get('next') or url_for('charts')
+    next_url = request.args.get('next') or url_for('index')
     if resp is None:
         flash(u'You denied the request to sign in.')
         return redirect(next_url)
@@ -185,22 +211,6 @@ def logout():
 
 # API
 # ----------------------------
-@app.route('/dash/<user_id>/')
-@app.route('/dash/<user_id>')
-def get_dashboard(user_id):
-    """ Function to build a simple table showing various status """
-    profile = get_user_profile(user_id)
-    device = get_device_info(user_id)
-    steps = get_activity(
-        user_id, 'steps', period='1d', return_as='raw')[0]['value']
-    return render_template('dash.html', device=device, steps=steps, profile=profile)
-
-
-@app.route('/weight/<user_id>/<period>')
-def get_weight(user_id, period='max'):
-    the_data = get_connector(user_id).get_bodyweight(user_id=user_id, period=period)
-    return jsonify(the_data)
-
 
 @app.route('/u/<user_id>/<resource>/<period>')
 def get_activity(user_id, resource, period='1w', return_as='json'):
@@ -273,79 +283,6 @@ def get_activity(user_id, resource, period='1w', return_as='json'):
         return jsonify(output_json(the_data, resource, datasequence_color, graph_type))
 
 
-@app.route('/u/summary/<user_id>/<period>')
-def get_levelsummary(user_id, period):
-    """ Function to build a four point graph summarizing activities """
-
-    app.logger.info('summary, summary, %s, %s, %s' %
-                    (user_id, period, request.remote_addr))
-
-    if period in ('1d', '1w'):
-        g_type = 'bar'
-    else:
-        g_type = 'line'
-
-    minutesSedentary = get_activity(
-        user_id, 'minutesSedentary', period=period, return_as='raw')
-    minutesLightlyActive = get_activity(
-        user_id, 'minutesLightlyActive', period=period, return_as='raw')
-    minutesFairlyActive = get_activity(
-        user_id, 'minutesFairlyActive', period=period, return_as='raw')
-    minutesVeryActive = get_activity(
-        user_id, 'minutesVeryActive', period=period, return_as='raw')
-
-    datasequences = []
-
-    ms = []
-    ml = []
-    mf = []
-    mv = []
-
-    for x in minutesSedentary:
-        ms.append({'title': x['dateTime'], 'value': float(x['value']) - 480})
-    for x in minutesLightlyActive:
-        ml.append({'title': x['dateTime'], 'value': float(x['value'])})
-    for x in minutesFairlyActive:
-        mf.append({'title': x['dateTime'], 'value': float(x['value'])})
-    for x in minutesVeryActive:
-        mv.append({'title': x['dateTime'], 'value': float(x['value'])})
-
-    datasequences.append({
-        "title": 'Sedentary',
-        "color": 'red',
-        "datapoints": ms,
-    })
-
-    datasequences.append({
-        "title": 'LightlyActive',
-        "color": 'orange',
-        "datapoints": ml,
-    })
-
-    datasequences.append({
-        "title": 'FairlyActive',
-        "color": 'blue',
-        "datapoints": mf,
-    })
-
-    datasequences.append({
-        "title": 'VeryActive',
-        "color": 'green',
-        "datapoints": mv,
-    })
-
-    graph = {
-        "graph": {
-            'title': 'Activity Level (MINUTES)',
-            'refreshEveryNSeconds': 600,
-            'type': g_type,
-            'datasequences': datasequences,
-        }
-    }
-
-    return jsonify(graph)
-
-
 # Filters
 # ----------------------------
 
@@ -399,20 +336,6 @@ def get_user_profile(user_id):
     return user_profile
 
 
-@app.route('/debug/<user_id>')
-def dev_dump(user_id):
-    """ print info about a user for debugging, only enabled when debug is True """
-    if app.debug:
-        app.logger.info('running in dev mode, debugging enabled')
-        app.logger.info(user_id)
-        user = get_user_profile(user_id)
-        devices = get_device_info(user_id)
-        return render_template('debug.html', user=user, devices=devices)
-    else:
-        print "Not running in dev mode, therefore redir to index"
-        return render_template('intro.html')
-
-
 def get_daily_goals(user_id):
     """ Function to return daily goals
     https://wiki.fitbit.com/display/API/API-Get-Activity-Daily-Goals
@@ -447,3 +370,121 @@ def output_json(dp, resource, datasequence_color, graph_type):
     })
 
     return graph
+
+
+def group_by_day(data):
+    grouped = []
+    days = {}
+    for point in data:
+        days.setdefault(point['date'], []).append(point['weight'])
+    for key in sorted(days):
+        min_val = min(days[key])
+        max_val = max(days[key])
+        avg_val = sum(days[key]) / len(days[key])
+        grouped.append({"day": key, "weight": avg_val, "error": [min_val, max_val]})
+    return grouped
+
+
+def group_by_month(data):
+    i = 0
+    grouped = []
+    months = {}
+    for point in data:
+        year, month, day = point['dateTime'].split('-')
+        yearmonth = "{0}-{1}".format(year, month)
+        months.setdefault(yearmonth, []).append(point['value'])
+    for key in sorted(months):
+        outliers = []
+        weights = sorted(months[key])
+        plot = calculate_boxplot(weights)
+        low, _, _, _, upr = plot
+        for w in weights:
+            if float(w) > upr or float(w) < low:
+                outliers.append(w)
+        grouped.append({"month": key, "plot": plot, "outliers": outliers, "index": i})
+        i += 1
+    return grouped
+
+
+def get_yearcycle(data):
+    years = {}
+    output = []
+    for point in data:
+        year, month, day = point['dateTime'].split('-')
+        if int(year) not in years:
+            years[int(year)] = {}
+        if int(month) not in years[int(year)]:
+            years[int(year)][int(month)] = []
+        years[int(year)][int(month)].append(flt(point['value']))
+    for y in years:
+        months = []
+        for m in range(1, 13):
+            if years[y].get(m, False):
+                months.append(flt(sum(years[y][m]) / len(years[y][m])))
+            else:
+                months.append(None)
+        output.append({
+            "name": y,
+            "data": months
+        })
+    return json.dumps(output)
+
+
+def calculate_median(numbers):
+    nums = sorted(numbers)
+    if len(nums) % 2 == 0:
+        median = (flt(nums[len(nums) / 2]) + flt(nums[(len(nums) / 2) - 1])) / 2
+    else:
+        median = nums[len(nums) / 2]
+    return flt(median)
+
+
+def calculate_quartiles(numbers):
+    nums = sorted(numbers)
+    if len(nums) % 2 == 0:
+        low_qtr = calculate_median(nums[:(len(nums) / 2)])
+        upr_qtr = calculate_median(nums[len(nums) / 2:])
+    else:
+        low_qtr = calculate_median(nums[:(len(nums) / 2)])
+        upr_qtr = calculate_median(nums[(len(nums) / 2) + 1:])
+    return (flt(low_qtr), flt(upr_qtr))
+
+
+def calculate_boxplot(numbers):
+    nums = sorted(numbers)
+    median = calculate_median(nums)
+    low_qtr, upr_qtr = calculate_quartiles(nums)
+    iqr = upr_qtr - low_qtr
+    upr_wsk = flt(upr_qtr + (1.5 * iqr))
+    low_wsk = flt(low_qtr - (1.5 * iqr))
+    return [low_wsk, low_qtr, median, upr_qtr, upr_wsk]
+
+
+def get_periods(all, year, month, week):
+    all_list = [flt(d.get('value')) for d in all]
+    year_list = [flt(d.get('value')) for d in year]
+    month_list = [flt(d.get('value')) for d in month]
+    week_list = [flt(d.get('value')) for d in week]
+    series = []
+    series.append({
+        "name": "Averages",
+        "type": "line",
+        "data": [flt(average(all_list)), flt(average(year_list)), flt(average(month_list)), flt(average(week_list))]
+    })
+    series.append({
+        "name": "Stats",
+        "type": "boxplot",
+        "data": [calculate_boxplot(all_list), calculate_boxplot(year_list), calculate_boxplot(month_list),
+                 calculate_boxplot(week_list)]
+    })
+    return series
+
+
+def flt(arg):
+    return float("{0:.1f}".format(float(arg)))
+
+
+def clean_max(data):
+    while (data[0]['value'] == data[1]['value']):
+        data.pop(0)
+    return data

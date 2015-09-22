@@ -1,7 +1,7 @@
 {
-    "version": "0.0.3",
+    "version": "0.0.4",
     "license": "MIT",
-    "name": "fitbitAnalytics",
+    "description": "Deep Dive Statistical Analysis of Fitbit Data",
     "ignore": [
         "**/.*",
         "node_modules",
@@ -26,5 +26,5 @@
         "globals"
     ],
     "homepage": "www.fitbitanalytics.com",
-    "description": "Deep Dive Statistical Analysis of Fitbit Data"
+    "name": "fitbitAnalytics"
 }
