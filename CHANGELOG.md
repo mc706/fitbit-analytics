@@ -13,6 +13,21 @@ This project adheres to [Semantic Versioning](http://semver.org/) and [Keep a Ch
 ### Fixes
 
 
+## [0.0.5] - 2015-09-22
+---
+
+### New
+
+* Added number bar to top of weight page
+
+### Changes
+
+* Added documentation
+
+### Fixes
+
+* Cleaned up Floats
+
 ## [0.0.4] - 2015-09-22
 ---
 
@@ -64,6 +79,7 @@ This project adheres to [Semantic Versioning](http://semver.org/) and [Keep a Ch
 * Setup Flask App
 * Built Basic Templates
 * Setup NPM and Bower
+
 
 
 

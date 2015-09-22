@@ -66,7 +66,7 @@ def index():
     if diff > 0:
         diff = "+" + str(diff)
     else:
-        diff = "-" + str(diff)
+        diff =  str(diff)
     sleep = get_activity(user_id, 'timeInBed', period='1d', return_as='raw')[0]['value']
     chartdata = get_activity(user_id, 'steps', period='1w', return_as='raw')
     weight_unit = CONVERSION[session['user_profile']['user']['weightUnit']]
@@ -114,8 +114,13 @@ def weight():
     boxplot = group_by_month(all_weight)
     yearcycle = get_yearcycle(all_weight)
     periods = get_periods(all_weight, year_weight, month_weight, week_weight)
+    weight_max = max([d.get('value') for d in all_weight])
+    weight_min = min([d.get('value') for d in all_weight])
+    weight_last = weights[-1]['weight']
+    month_max = max([d.get('value') for d in month_weight])
     return render_template('weight.html', weights=weights, weight_unit=weight_unit, chartdata=chartdata,
-                           all_weight=all_weight, boxplot=boxplot, yearcycle=yearcycle, periods=periods)
+                           all_weight=all_weight, boxplot=boxplot, yearcycle=yearcycle, periods=periods,
+                           weight_max=weight_max, weight_min=weight_min, weight_last=weight_last, month_max=month_max)
 
 
 @app.route('/sleep')
@@ -336,19 +341,10 @@ def get_user_profile(user_id):
     return user_profile
 
 
-def get_daily_goals(user_id):
-    """ Function to return daily goals
-    https://wiki.fitbit.com/display/API/API-Get-Activity-Daily-Goals
-    Not yet implemented
-    """
-    # user_goals = get_connector(user_id).get_activity_goals()
-    pass
-
-
 def output_json(dp, resource, datasequence_color, graph_type):
     """ Return a properly formatted JSON file for Statusboard """
     graph_title = ''
-    datapoints = []
+    datapoints = list()
     print dp
     for x in dp:
         datapoints.append(
@@ -481,10 +477,20 @@ def get_periods(all, year, month, week):
 
 
 def flt(arg):
+    """
+    return single digit float
+    :param arg:
+    :return:
+    """
     return float("{0:.1f}".format(float(arg)))
 
 
 def clean_max(data):
-    while (data[0]['value'] == data[1]['value']):
+    """
+    Removes the filled dates that fitbit adds when max is selected
+    :param data:
+    :return:
+    """
+    while data[0]['value'] == data[1]['value']:
         data.pop(0)
     return data
