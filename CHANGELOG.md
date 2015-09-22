@@ -8,10 +8,15 @@ This project adheres to [Semantic Versioning](http://semver.org/) and [Keep a Ch
 
 ### New
 
+* Added number bar to top of weight page
+
 ### Changes
+
+* Added documentation
 
 ### Fixes
 
+* Cleaned up Floats
 
 ## [0.0.4] - 2015-09-22
 ---
