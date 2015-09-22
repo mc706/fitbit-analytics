@@ -3,6 +3,7 @@ from flask import render_template, flash, redirect, session, url_for, request, j
 from app import app, db
 from models import User
 from random import choice
+from highcharts import Chart
 from flask_oauthlib.client import OAuth
 import os
 import json
@@ -66,7 +67,7 @@ def index():
     if diff > 0:
         diff = "+" + str(diff)
     else:
-        diff =  str(diff)
+        diff = str(diff)
     sleep = get_activity(user_id, 'timeInBed', period='1d', return_as='raw')[0]['value']
     chartdata = get_activity(user_id, 'steps', period='1w', return_as='raw')
     weight_unit = CONVERSION[session['user_profile']['user']['weightUnit']]
@@ -86,10 +87,84 @@ def steps():
     if not session.get('fibit_keys', False):
         redirect(url_for('intro'))
     user_id = session['user_profile']['user']['encodedId']
-    weight_unit = CONVERSION[session['user_profile']['user']['weightUnit']]
-    weights = get_connector(user_id).get_bodyweight(user_id=user_id, period='1m')['weight']
-    chartdata = group_by_day(weights)
-    return render_template('steps.html', weights=weights, weight_unit=weight_unit, chartdata=chartdata)
+    all_steps = get_activity(user_id, 'steps', period='max', return_as="raw")
+    year_steps = get_activity(user_id, 'steps', period='1y', return_as="raw")
+    month_steps = get_activity(user_id, 'steps', period='1m', return_as="raw")
+    week_steps = get_activity(user_id, 'steps', period='1w', return_as="raw")
+    day_steps = get_activity(user_id, 'steps', period='1d', return_as="raw")
+    statsbar = [
+        {
+            'icon': "fa-step-forward fa-rotate-270",
+            'title': "All Time Max Steps",
+            'value': max([d.get('value') for d in all_steps])
+        },
+        {
+            'icon': "fa-step-forward fa-rotate-90",
+            'title': "All Time Min Steps",
+            'value': min([d.get('value') for d in all_steps])
+        },
+        {
+            'icon': "fa-calendar",
+            'title': "Month Max Steps",
+            'value': max([d.get('value') for d in month_steps])
+        },
+        {
+            'icon': "fa-balance-scale",
+            'title': "Steps Today",
+            'value': max([d.get('value') for d in day_steps])
+        }
+    ]
+    boxplot_data = group_by_month(clean_max(all_steps))
+    charts = [
+        {
+            "title": "Steps for Past Month",
+            "id": "month-steps",
+            "chart": Chart("Steps for Past Month",
+                           xType="datetime",
+                           xCategories=[d.get('dateTime') for d in month_steps]
+                           ).add_series("Steps",
+                                        data=[d.get('value') for d in month_steps],
+                                        type="column")
+
+        },
+        {
+            "title": "Average Steps per Month",
+            "id": "month-average",
+            "chart": Chart(
+                "Average Steps Per Month",
+                xtype="datetime",
+                xCategories=[d.get('month') for d in boxplot_data]
+            ).add_series(
+                "Steps",
+                data=[d.get('plot') for d in boxplot_data],
+                type="boxplot"
+            ).add_series(
+                "Outliers",
+                data=[[d.get('index'), ] + d.get('outliers') for d in boxplot_data if d.get('outliers', False)],
+                type="scatter"
+            )
+        },
+        {
+            "title": "Monthly Average Yearcycle",
+            "id": "yearcycle",
+            "chart": Chart(
+                "Monthly Average Yearcycle",
+                xCategories=['Jan', 'Feb', 'Mar', "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+            ).add_raw_series(get_yearcycle(clean_max(all_steps), return_as="raw"))
+        },
+        {
+            "title": "Average for Time Period",
+            "id": "time-period",
+            "chart": Chart(
+                "Average Steps For Different Time Periods",
+                xCategories=["All Time", "Year", "Month", "Week"]
+            ).add_raw_series(get_periods(clean_max(all_steps), year_steps, month_steps, week_steps))
+        }
+
+    ]
+    print get_yearcycle(clean_max(all_steps))
+
+    return render_template('statpage.html', title="Steps", statsbar=statsbar, charts=charts)
 
 
 @app.route('/calories')
@@ -103,14 +178,16 @@ def calories():
 def weight():
     if not session.get('fibit_keys', False):
         redirect(url_for('intro'))
+    # Fetches
     user_id = session['user_profile']['user']['encodedId']
     weight_unit = CONVERSION[session['user_profile']['user']['weightUnit']]
     weights = get_connector(user_id).get_bodyweight(user_id=user_id, period='1m')['weight']
-    chartdata = group_by_day(weights)
     all_weight = clean_max(get_activity(user_id, 'weight', period='max', return_as='raw'))
     year_weight = get_activity(user_id, 'weight', period='1y', return_as='raw')
     month_weight = get_activity(user_id, 'weight', period='1m', return_as='raw')
     week_weight = get_activity(user_id, 'weight', period='1w', return_as='raw')
+    # series setup
+    chartdata = group_by_day(weights, 'weight')
     boxplot = group_by_month(all_weight)
     yearcycle = get_yearcycle(all_weight)
     periods = get_periods(all_weight, year_weight, month_weight, week_weight)
@@ -118,9 +195,54 @@ def weight():
     weight_min = min([d.get('value') for d in all_weight])
     weight_last = weights[-1]['weight']
     month_max = max([d.get('value') for d in month_weight])
+    statsbar = [
+        {
+            'icon': "fa-step-forward fa-rotate-270",
+            'title': "All Time Max Weight",
+            'value': weight_max
+        },
+        {
+            'icon': "fa-step-forward fa-rotate-90",
+            'title': "All Time Min Weight",
+            'value': weight_min
+        },
+        {
+            'icon': "fa-calendar",
+            'title': "Month Max Weight",
+            'value': month_max
+        },
+        {
+            'icon': "fa-balance-scale",
+            'title': "Last Weight",
+            'value': weight_last
+        }
+    ]
+    charts = [
+        {
+            "title": "Weight Fluctuations for Past Month",
+            "id": "weight",
+        },
+        {
+            "title": "Average Weight All Time",
+            "id": "allweight",
+        },
+        {
+            "title": "Monthly Boxplot",
+            "id": "boxplot",
+        },
+        {
+            "title": "Yearly Cycle",
+            "id": "yearcycle",
+        },
+        {
+            "title": "Averages for Periods",
+            "id": "period",
+        },
+
+    ]
     return render_template('weight.html', weights=weights, weight_unit=weight_unit, chartdata=chartdata,
                            all_weight=all_weight, boxplot=boxplot, yearcycle=yearcycle, periods=periods,
-                           weight_max=weight_max, weight_min=weight_min, weight_last=weight_last, month_max=month_max)
+                           statsbar=statsbar, charts=charts)
 
 
 @app.route('/sleep')
@@ -368,16 +490,19 @@ def output_json(dp, resource, datasequence_color, graph_type):
     return graph
 
 
-def group_by_day(data):
+# Graph Helpers
+# ------------------------
+
+def group_by_day(data, attr):
     grouped = []
     days = {}
     for point in data:
-        days.setdefault(point['date'], []).append(point['weight'])
+        days.setdefault(point['date'], []).append(point[attr])
     for key in sorted(days):
         min_val = min(days[key])
         max_val = max(days[key])
         avg_val = sum(days[key]) / len(days[key])
-        grouped.append({"day": key, "weight": avg_val, "error": [min_val, max_val]})
+        grouped.append({"day": key, attr: avg_val, "error": [min_val, max_val]})
     return grouped
 
 
@@ -402,7 +527,7 @@ def group_by_month(data):
     return grouped
 
 
-def get_yearcycle(data):
+def get_yearcycle(data, return_as="json"):
     years = {}
     output = []
     for point in data:
@@ -423,7 +548,12 @@ def get_yearcycle(data):
             "name": y,
             "data": months
         })
-    return json.dumps(output)
+    if return_as is "json":
+        return json.dumps(output)
+    elif return_as is "raw":
+        return output
+    else:
+        return output
 
 
 def calculate_median(numbers):
@@ -453,10 +583,12 @@ def calculate_boxplot(numbers):
     iqr = upr_qtr - low_qtr
     upr_wsk = flt(upr_qtr + (1.5 * iqr))
     low_wsk = flt(low_qtr - (1.5 * iqr))
+    if low_wsk < 0:
+        low_wsk = 0
     return [low_wsk, low_qtr, median, upr_qtr, upr_wsk]
 
 
-def get_periods(all, year, month, week):
+def get_periods(all, year, month, week, day=None):
     all_list = [flt(d.get('value')) for d in all]
     year_list = [flt(d.get('value')) for d in year]
     month_list = [flt(d.get('value')) for d in month]

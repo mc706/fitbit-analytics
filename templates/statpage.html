@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% set active_age = "{{ id }}" %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-lg-12">
+            <h1 class="page-header">
+                {{ header }}
+                <small>Statistics Overview</small>
+            </h1>
+        </div>
+    </div>
+
+    {% with stats=statsbar %}
+        {% include "partials/statsbar.html" %}
+    {% endwith %}
+
+    {% for chart in charts %}
+        {% include "partials/chart.html" %}
+    {% endfor %}
+
+{% endblock %}
+
+{% block scripts %}
+    <script>
+        $(function () {
+            {% for chart in charts %}
+            $("#highchart-{{ chart.id }}").highcharts({{ chart.chart.get_json()|safe }});
+            {% endfor %}
+        });
+    </script>
+{% endblock %}

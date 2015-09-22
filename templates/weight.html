@@ -11,150 +11,25 @@
         </div>
     </div>
 
-    <div class="row">
-        <div class="col-lg-3 col-md-6">
-            <div class="panel panel-primary">
-                <div class="panel-heading">
-                    <div class="row">
-                        <div class="col-xs-3">
-                            <i class="fa fa-step-forward fa-rotate-270 fa-5x"></i>
-                        </div>
-                        <div class="col-xs-9 text-right">
-                            <div class="huge">{{ weight_max|natural_number }}</div>
-                            <div> All Time Max Weight</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-lg-3 col-md-6">
-            <div class="panel panel-green">
-                <div class="panel-heading">
-                    <div class="row">
-                        <div class="col-xs-3">
-                            <i class="fa fa-step-forward fa-rotate-90 fa-5x"></i>
-                        </div>
-                        <div class="col-xs-9 text-right">
-                            <div class="huge">{{ weight_min|natural_number }}</div>
-                            <div>All Time Min Weight!</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-lg-3 col-md-6">
-            <div class="panel panel-yellow">
-                <div class="panel-heading">
-                    <div class="row">
-                        <div class="col-xs-3">
-                            <i class="fa fa-calendar fa-5x"></i>
-                        </div>
-                        <div class="col-xs-9 text-right">
-                            <div class="huge">{{ month_max }}</div>
-                            <div>Month Max!</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-lg-3 col-md-6">
-            <div class="panel panel-red">
-                <div class="panel-heading">
-                    <div class="row">
-                        <div class="col-xs-3">
-                            <i class="fa fa-balance-scale fa-5x"></i>
-                        </div>
-                        <div class="col-xs-9 text-right">
-                            <div class="huge">{{ weight_last }}</div>
-                            <div>Last Weight!</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+    {% with stats=statsbar %}
+        {% include "partials/statsbar.html" %}
+    {% endwith %}
 
-    <div class="row">
-        <div class="col-lg-12">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h3 class="panel-title"><i class="fa fa-bar-chart-o fa-fw"></i> Weight Fluctuations for Past Month
-                    </h3>
-                </div>
-                <div class="panel-body">
-                    <div id="highchart-weight" class="chart"></div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="row">
-        <div class="col-lg-12">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h3 class="panel-title"><i class="fa fa-bar-chart-o fa-fw"></i> Average Weight All Time</h3>
-                </div>
-                <div class="panel-body">
-                    <div id="highchart-allweight" class="chart"></div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="row">
-        <div class="col-lg-12">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h3 class="panel-title"><i class="fa fa-bar-chart-o fa-fw"></i> Monthly Boxplot</h3>
-                </div>
-                <div class="panel-body">
-                    <div id="highchart-boxplot" class="chart"></div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="row">
-        <div class="col-lg-12">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h3 class="panel-title"><i class="fa fa-bar-chart-o fa-fw"></i> Yearly Cycle</h3>
-                </div>
-                <div class="panel-body">
-                    <div id="highchart-yearcycle" class="chart"></div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="row">
-        <div class="col-lg-12">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h3 class="panel-title"><i class="fa fa-bar-chart-o fa-fw"></i> Averages & Std</h3>
-                </div>
-                <div class="panel-body">
-                    <div id="highchart-period" class="chart"></div>
-                </div>
-            </div>
-        </div>
-    </div>
+    {% for chart in charts %}
+        {% include "partials/chart.html" %}
+    {% endfor %}
 
 {% endblock %}
 
 {% block scripts %}
     <script>
-        function getDate(dateStr) {
-            var split = dateStr.split('-'),
-                    year = split[0],
-                    month = parseInt(split[1], 10) - 1,
-                    day = parseInt(split[2]);
-            return Date.UTC(year, month, day);
-        }
         $(function () {
             $('#highchart-weight').highcharts({
                 chart: {
                     zoomType: 'x'
+                },
+                credits: {
+                    enabled: false
                 },
                 title: {
                     text: 'Weight Fluctuation for Past Month'
@@ -196,6 +71,9 @@
                     text: 'Daily Average Weight',
                     x: -20 //center
                 },
+                credits: {
+                    enabled: false
+                },
                 xAxis: {
                     type: 'datetime',
                     categories: [{% for step in all_weight%}"{{ step.dateTime }}"{% if not loop.last %}, {% endif %}{% endfor %}]
@@ -223,30 +101,27 @@
             });
 
             $('#highchart-boxplot').highcharts({
-
                 chart: {
                     zoomType: 'x',
                     type: 'boxplot'
                 },
-
                 title: {
                     text: 'Weight by Month'
                 },
-
+                credits: {
+                    enabled: false
+                },
                 legend: {
                     enabled: false
                 },
-
                 xAxis: {
                     categories: [{% for month in boxplot%}"{{ month.month }}"{% if not loop.last %}, {% endif %}{% endfor %}]
                 },
-
                 yAxis: {
                     title: {
                         text: '{{ weight_unit }}'
                     }
                 },
-
                 series: [{
                     name: 'Weight',
                     data: [{% for month in boxplot%}{{ month.plot }}{% if not loop.last %}, {% endif %}{% endfor %}],
@@ -265,7 +140,6 @@
                         lineColor: Highcharts.getOptions().colors[0]
                     }
                 }]
-
             });
 
             $('#highchart-yearcycle').highcharts({
@@ -281,7 +155,9 @@
                 legend: {
                     enabled: true
                 },
-
+                credits: {
+                    enabled: false
+                },
                 xAxis: {
                     categories: ['Jan', 'Feb', 'Mar', "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
                 },
@@ -305,7 +181,9 @@
                 title: {
                     text: 'Average and Stats for Decreasing Periods '
                 },
-
+                credits: {
+                    enabled: false
+                },
                 legend: {
                     enabled: true
                 },

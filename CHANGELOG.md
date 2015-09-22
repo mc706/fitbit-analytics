@@ -8,10 +8,11 @@ This project adheres to [Semantic Versioning](http://semver.org/) and [Keep a Ch
 
 ### New
 
+* Added steps data
+
 ### Changes
 
-### Fixes
-
+* Made statspage general page template
 
 ## [0.0.5] - 2015-09-22
 ---
