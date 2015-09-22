@@ -13,6 +13,17 @@ This project adheres to [Semantic Versioning](http://semver.org/) and [Keep a Ch
 ### Fixes
 
 
+## [0.0.6] - 2015-09-22
+---
+
+### New
+
+* Added steps data
+
+### Changes
+
+* Made statspage general page template
+
 ## [0.0.5] - 2015-09-22
 ---
 
@@ -79,6 +90,7 @@ This project adheres to [Semantic Versioning](http://semver.org/) and [Keep a Ch
 * Setup Flask App
 * Built Basic Templates
 * Setup NPM and Bower
+
 
 
 
