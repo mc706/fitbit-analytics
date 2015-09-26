@@ -9,4 +9,17 @@ html, body, #wrapper, #page-wrapper {
   min-height: 300px;
   width: 100%; }
 
+#intro section {
+  min-height: 95vh;
+  position: relative;
+  padding: 15px; }
+  #intro section#landing h1 {
+    margin-top: 30vh;
+    font-size: 6em;
+    color: #fff; }
+    #intro section#landing h1 small {
+      font-size: .7em; }
+  #intro section#about {
+    background: #fff; }
+
 /*# sourceMappingURL=styles.css.map */

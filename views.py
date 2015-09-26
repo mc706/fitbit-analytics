@@ -1,6 +1,6 @@
 import fitbit
 from flask import render_template, flash, redirect, session, url_for, request, jsonify, send_from_directory
-from app import app, db
+from application import app, db
 from models import User
 from random import choice
 from highcharts import Chart
@@ -45,6 +45,12 @@ fitbit_app = oauth.remote_app(
 def page_not_found(e):
     app.logger.info('404')
     return render_template('404.html'), 404
+
+
+@app.errorhandler(500)
+def page_not_found(e):
+    app.logger.info('404')
+    return render_template('500.html'), 404
 
 
 @app.route('/')
@@ -250,7 +256,7 @@ def sleep():
 def settings():
     if not session.get('fitbit_keys', False):
         return redirect(url_for('intro'))
-    return render_template('home.html')
+    return render_template('settings.html')
 
 
 @app.route('/intro')

@@ -1,4 +1,4 @@
-from app import app
+from application import app
 from models import *
 from views import *
 

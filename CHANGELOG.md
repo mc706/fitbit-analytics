@@ -13,14 +13,27 @@ This project adheres to [Semantic Versioning](http://semver.org/) and [Keep a Ch
 ### Fixes
 
 
+## [0.0.9] - 2015-09-26
+---
+
+### New
+
+* Initialized AWS
+* Added 500 Page
+* Added Favicon
+
+### Changes
+
+* Updated Intro Page
+* Rebranded to Analytics.fit
+
+
 ## [0.0.8] - 2015-09-26
 ---
 
 ### New
 
-### Changes
-
-### Fixes
+* Installed AWSCLI
 
 
 ## [0.0.7] - 2015-09-26
@@ -111,6 +124,7 @@ This project adheres to [Semantic Versioning](http://semver.org/) and [Keep a Ch
 * Setup Flask App
 * Built Basic Templates
 * Setup NPM and Bower
+
 
 
 
