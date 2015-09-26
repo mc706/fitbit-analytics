@@ -1,6 +1,6 @@
 import fitbit
 from flask import render_template, flash, redirect, session, url_for, request, jsonify, send_from_directory
-from app import app, db
+from application import app, db
 from models import User
 from random import choice
 from highcharts import Chart

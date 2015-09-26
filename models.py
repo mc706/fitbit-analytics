@@ -1,4 +1,4 @@
-from app import db
+from application import db
 
 # Add database model to store user_id, user_key and user_secret
 # Used for accessing API
