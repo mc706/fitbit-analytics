@@ -18,9 +18,7 @@ This project adheres to [Semantic Versioning](http://semver.org/) and [Keep a Ch
 
 ### New
 
-### Changes
-
-### Fixes
+* Installed AWSCLI
 
 
 ## [0.0.7] - 2015-09-26
