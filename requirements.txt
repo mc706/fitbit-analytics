@@ -9,6 +9,7 @@ GitPython==1.0.1
 Jinja2==2.7.2
 Markdown==2.4.1
 MarkupSafe==0.18
+PyMySQL==0.6.6
 PyYAML==3.11
 Pygments==1.6
 SQLAlchemy==0.9.1

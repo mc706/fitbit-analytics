@@ -43,13 +43,13 @@ fitbit_app = oauth.remote_app(
 
 @application.errorhandler(404)
 def page_not_found(e):
-    application.logger.info('404')
+    # application.logger.info('404')
     return render_template('404.html'), 404
 
 
 @application.errorhandler(500)
 def page_not_found(e):
-    application.logger.info('404')
+    # application.logger.info('404')
     return render_template('500.html'), 404
 
 

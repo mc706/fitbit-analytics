@@ -13,15 +13,17 @@ try:
 except ImportError:
     SECRETS = {}
 
-DEBUG = get_var("DEBUG")
+DEBUG = True #get_var("DEBUG") or False
 
 
 # if sqlite
-if DEBUG:
-    basedir = os.path.abspath(os.path.dirname(__file__))
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, 'app.db')
-else:
-    SQLALCHEMY_DATABASE_URI = get_var('DATABASE_URL')
+# if DEBUG:
+#     basedir = os.path.abspath(os.path.dirname(__file__))
+#     SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, 'app.db')
+# else:
+#     #SQLALCHEMY_DATABASE_URI = get_var('DATABASE_URL')
+#
+SQLALCHEMY_DATABASE_URI = "mysql+pymysql://django:Scannerpatrol706@fitanalyticsdb.cxeyjwdtblrf.us-east-1.rds.amazonaws.com:3306/fitanalyticsdb"
 
 # get secret key for session
 SECRET_KEY = SECRETS.get("SECRET_KEY", False) or get_var('SECRET_KEY') or "1234567890"

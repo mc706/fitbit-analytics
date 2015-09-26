@@ -3,6 +3,7 @@ from flask.ext.sqlalchemy import SQLAlchemy
 from flask_debugtoolbar import DebugToolbarExtension
 from flask_mail import Mail
 from config import DEBUG
+
 application = Flask(__name__)
 
 application.config.from_object('config')
@@ -23,3 +24,8 @@ db = SQLAlchemy(application)
 # app.logger.setLevel(logging.INFO)
 # file_handler.setLevel(logging.INFO)
 # app.logger.addHandler(file_handler)
+
+if __name__ == '__main__':
+    from models import *
+    from views import *
+    application.run(host='0.0.0.0')
