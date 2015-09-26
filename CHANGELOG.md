@@ -13,14 +13,22 @@ This project adheres to [Semantic Versioning](http://semver.org/) and [Keep a Ch
 ### Fixes
 
 
+## [0.0.8] - 2015-09-26
+---
+
+### New
+
+### Changes
+
+### Fixes
+
+
 ## [0.0.7] - 2015-09-26
 ---
 
 ### New
 
 * Added auth check
-
-### Changes
 
 ### Fixes
 
@@ -103,6 +111,7 @@ This project adheres to [Semantic Versioning](http://semver.org/) and [Keep a Ch
 * Setup Flask App
 * Built Basic Templates
 * Setup NPM and Bower
+
 
 
 
