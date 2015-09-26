@@ -8,10 +8,13 @@ This project adheres to [Semantic Versioning](http://semver.org/) and [Keep a Ch
 
 ### New
 
+* Added auth check
+
 ### Changes
 
 ### Fixes
 
+* Added title to top of statspage
 
 ## [0.0.6] - 2015-09-22
 ---

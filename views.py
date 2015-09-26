@@ -41,12 +41,6 @@ fitbit_app = oauth.remote_app(
 # Routes
 # ----------------------------
 
-@app.route('/favicon.ico')
-def favicon():
-    return send_from_directory(os.path.join(app.root_path, 'static'),
-                               'img/favicon.ico', mimetype='image/vnd.microsoft.icon')
-
-
 @app.errorhandler(404)
 def page_not_found(e):
     app.logger.info('404')
@@ -55,8 +49,8 @@ def page_not_found(e):
 
 @app.route('/')
 def index():
-    if not session.get('fibit_keys', False):
-        redirect(url_for('intro'))
+    if not session.get('fitbit_keys', False):
+        return redirect(url_for('intro'))
     user_id = session['user_profile']['user']['encodedId']
     steps = get_activity(user_id, 'steps', period='1d', return_as='raw')[0]['value']
     calories = get_activity(user_id, 'calories', period='1d', return_as='raw')[0]['value']
@@ -77,15 +71,15 @@ def index():
 
 @app.route('/profile')
 def profile():
-    if not session.get('fibit_keys', False):
-        redirect(url_for('intro'))
+    if not session.get('fitbit_keys', False):
+        return redirect(url_for('intro'))
     return render_template('profile.html')
 
 
 @app.route('/steps')
 def steps():
-    if not session.get('fibit_keys', False):
-        redirect(url_for('intro'))
+    if not session.get('fitbit_keys', False):
+        return redirect(url_for('intro'))
     user_id = session['user_profile']['user']['encodedId']
     all_steps = get_activity(user_id, 'steps', period='max', return_as="raw")
     year_steps = get_activity(user_id, 'steps', period='1y', return_as="raw")
@@ -96,22 +90,22 @@ def steps():
         {
             'icon': "fa-step-forward fa-rotate-270",
             'title': "All Time Max Steps",
-            'value': max([d.get('value') for d in all_steps])
+            'value': max([int(d.get('value')) for d in all_steps])
         },
         {
             'icon': "fa-step-forward fa-rotate-90",
-            'title': "All Time Min Steps",
-            'value': min([d.get('value') for d in all_steps])
+            'title': "Average Daily Steps",
+            'value': int(average([int(d.get('value')) for d in all_steps]))
         },
         {
             'icon': "fa-calendar",
             'title': "Month Max Steps",
-            'value': max([d.get('value') for d in month_steps])
+            'value': max([int(d.get('value')) for d in month_steps])
         },
         {
             'icon': "fa-balance-scale",
             'title': "Steps Today",
-            'value': max([d.get('value') for d in day_steps])
+            'value': max([int(d.get('value')) for d in day_steps])
         }
     ]
     boxplot_data = group_by_month(clean_max(all_steps))
@@ -169,15 +163,15 @@ def steps():
 
 @app.route('/calories')
 def calories():
-    if not session.get('fibit_keys', False):
-        redirect(url_for('intro'))
+    if not session.get('fitbit_keys', False):
+        return redirect(url_for('intro'))
     return render_template('calories.html')
 
 
 @app.route('/weight')
 def weight():
-    if not session.get('fibit_keys', False):
-        redirect(url_for('intro'))
+    if not session.get('fitbit_keys', False):
+        return redirect(url_for('intro'))
     # Fetches
     user_id = session['user_profile']['user']['encodedId']
     weight_unit = CONVERSION[session['user_profile']['user']['weightUnit']]
@@ -247,20 +241,22 @@ def weight():
 
 @app.route('/sleep')
 def sleep():
-    if not session.get('fibit_keys', False):
-        redirect(url_for('intro'))
+    if not session.get('fitbit_keys', False):
+        return redirect(url_for('intro'))
     return render_template('sleep.html')
 
 
 @app.route('/settings')
 def settings():
-    if not session.get('fibit_keys', False):
-        redirect(url_for('intro'))
+    if not session.get('fitbit_keys', False):
+        return redirect(url_for('intro'))
     return render_template('home.html')
 
 
 @app.route('/intro')
 def intro():
+    if session.get("fitbit_keys", False):
+        return redirect(url_for('index'))
     return render_template('intro.html')
 
 
