@@ -3,14 +3,14 @@ from flask.ext.sqlalchemy import SQLAlchemy
 from flask_debugtoolbar import DebugToolbarExtension
 from flask_mail import Mail
 from config import DEBUG
-app = Flask(__name__)
+application = Flask(__name__)
 
-app.config.from_object('config')
+application.config.from_object('config')
 
 if not DEBUG:
-    toolbar = DebugToolbarExtension(app)
+    toolbar = DebugToolbarExtension(application)
 
-db = SQLAlchemy(app)
+db = SQLAlchemy(application)
 
 # mail = Mail(app)
 #
