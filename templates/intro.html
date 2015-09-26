@@ -1,24 +1,102 @@
-{% extends "base.html" %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    {% include "meta.html" %}
+    {% include "favicons.html" %}
+    <title>Analytics.fit{%- block title %}{% endblock %}</title>
 
-{% block content %}
+    <link rel="stylesheet" href="/static/components/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/components/font-awesome/css/font-awesome.css">
+    <link rel="stylesheet" href="/static/assets/styles/vendor/sb-admin.css">
+    <link rel="stylesheet" href="/static/assets/styles/styles.css">
+</head>
+<body>
+<div id="intro">
+    <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">Analytics.fit</a>
+        </div>
 
-    <div class="container-fluid">
-        <p class="lead">Not Logged In...</p>
+        <ul class="nav navbar-right top-nav">
+            <li>
+                <a href="/login"><i class="fa fa-fw fa-user"></i> Login</a>
+            </li>
+        </ul>
+    </nav>
+    <section id="landing">
+        <div class="text-center">
+            <h1>
+                Analytics.fit<br>
+                <small>A Deep Dive Statistical Analysis of your Fitbit<sup>&reg;</sup> Data</small>
+            </h1>
+        </div>
+    </section>
 
-        <div class="row-fluid">
-            <div class="span2">
-                <a href="{{ url_for('login') }}" class="btn">Login</a>
+    <section id="about">
+        <div class="text-center">
+            <h2>About</h2>
+            <hr>
+        </div>
+        <div class="row">
+            <div class="col-md-4">
+                <div class="text-center">
+                    <h3>Deep Dive</h3>
+                </div>
+                <p>Not Happy with the details you are getting from the Fitbit<sup>&reg;</sup> app or site?
+                    We provide deeper insights into your data.</p>
             </div>
-            <div class="span10">
-                <p>In order to generate graphs you need to grant Fitboard permission to your Fitbit data.</p>
+            <div class="col-md-4">
+                <div class="text-center">
+                    <h3>Devil is in the Details</h3>
+                </div>
+                <p>
+                    By taking a statistical approach to your detail, you can discover things you may not have
+                    before.
+                </p>
+            </div>
+            <div class="col-md-4">
+                <div class="text-center">
+                    <h3>No Setup Required</h3>
+                </div>
 
-                <p>Fitboard connects your Fitbit to your Status Board using the Fitbit provided <abbr
-                        title="Application Programming Interface">API</abbr>. Fitbit provides your data to Fitboard
-                    using the secure, open standard <a href="http://oauth.net" class="href">OAUTH</a>.</p>
-                At anytime you can revoke Fitboard's <a href="http://www.fitbit.com/user/profile/apps" class="href">access</a>
-                and remove the stored OAUTH tokens from Fitboard (your graphs will stop working).
+                <p>We draw our data directly from the Fitbit<sup>&reg;</sup> API. Just sign into your account with OAUTH
+                    and you are ready to go.</p>
             </div>
         </div>
-    </div>
+        <div class="row">
+            <div class="col-md-4">
+                <div class="text-center">
+                    <h3>Private Data</h3>
+                </div>
+                <p>Your data is yours. We dont store any of it. Everytime you want your data, it is retrieved. When you are done, it disappears.</p>
+            </div>
+            <div class="col-md-4">
+                <div class="text-center">
+                    <h3>Completely Free</h3>
+                </div>
+                <p>
+                    Both free as in speech and free as in beer. You can find the source on <a href="https://github.com/mc706/fitbit-analytics">github.</a>
+                </p>
+            </div>
+            <div class="col-md-4">
+                <div class="text-center">
+                    <h3>No Setup Required</h3>
+                </div>
 
-{% endblock %}
+                <p>We draw our data directly from the Fitbit<sup>&reg;</sup> API. Just sign into your account with OAUTH
+                    and you are ready to go.</p>
+            </div>
+        </div>
+    </section>
+</div>
+<script src="/static/components/jquery/dist/jquery.min.js"></script>
+<script src="/static/components/bootstrap/dist/js/bootstrap.min.js"></script>
+</body>
+</html>

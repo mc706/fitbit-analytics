@@ -47,6 +47,12 @@ def page_not_found(e):
     return render_template('404.html'), 404
 
 
+@app.errorhandler(500)
+def page_not_found(e):
+    app.logger.info('404')
+    return render_template('500.html'), 404
+
+
 @app.route('/')
 def index():
     if not session.get('fitbit_keys', False):
@@ -250,7 +256,7 @@ def sleep():
 def settings():
     if not session.get('fitbit_keys', False):
         return redirect(url_for('intro'))
-    return render_template('home.html')
+    return render_template('settings.html')
 
 
 @app.route('/intro')
