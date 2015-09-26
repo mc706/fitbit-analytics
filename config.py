@@ -3,7 +3,7 @@ import os
 
 def get_var(name):
     try:
-        return os.environ(name)
+        return os.environ[name]
     except KeyError:
         return False
 
@@ -21,7 +21,7 @@ if DEBUG:
     basedir = os.path.abspath(os.path.dirname(__file__))
     SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, 'app.db')
 else:
-    SQLALCHEMY_DATABASE_URI = os.environ['DATABASE_URL']
+    SQLALCHEMY_DATABASE_URI = get_var('DATABASE_URL')
 
 # get secret key for session
 SECRET_KEY = SECRETS.get("SECRET_KEY", False) or get_var('SECRET_KEY') or "1234567890"
