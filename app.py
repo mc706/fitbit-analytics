@@ -2,12 +2,13 @@ from flask import Flask
 from flask.ext.sqlalchemy import SQLAlchemy
 from flask_debugtoolbar import DebugToolbarExtension
 from flask_mail import Mail
-
+from config import DEBUG
 app = Flask(__name__)
 
 app.config.from_object('config')
 
-toolbar = DebugToolbarExtension(app)
+if not DEBUG:
+    toolbar = DebugToolbarExtension(app)
 
 db = SQLAlchemy(app)
 
