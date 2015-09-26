@@ -8,6 +8,16 @@ This project adheres to [Semantic Versioning](http://semver.org/) and [Keep a Ch
 
 ### New
 
+### Changes
+
+### Fixes
+
+
+## [0.0.9] - 2015-09-26
+---
+
+### New
+
 * Initialized AWS
 * Added 500 Page
 * Added Favicon
@@ -114,6 +124,7 @@ This project adheres to [Semantic Versioning](http://semver.org/) and [Keep a Ch
 * Setup Flask App
 * Built Basic Templates
 * Setup NPM and Bower
+
 
 
 
