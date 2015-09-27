@@ -109,3 +109,7 @@ def compile_scss():
 
 def start():
     local("python main.py")
+
+
+def test():
+    local("python tests.py")

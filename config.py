@@ -15,9 +15,9 @@ except ImportError:
 
 DEBUG = get_var("DEBUG") or False
 
+basedir = os.path.abspath(os.path.dirname(__file__))
 
 if DEBUG:
-    basedir = os.path.abspath(os.path.dirname(__file__))
     SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, 'app.db')
 else:
     SQLALCHEMY_DATABASE_URI = get_var('DATABASE_URL')
