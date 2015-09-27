@@ -6,6 +6,16 @@ This project adheres to [Semantic Versioning](http://semver.org/) and [Keep a Ch
 ## [Unreleased]
 ---
 
+### New
+
+### Changes
+
+### Fixes
+
+
+## [0.1.2] - 2015-09-27
+---
+
 ### Fixes
 
 * Fixed deployment configuration
@@ -141,6 +151,7 @@ This project adheres to [Semantic Versioning](http://semver.org/) and [Keep a Ch
 * Setup Flask App
 * Built Basic Templates
 * Setup NPM and Bower
+
 
 
 
