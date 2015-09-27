@@ -9,7 +9,7 @@
     "bugs": {
         "url": "https://github.com/mc706/fitbitanalytics/issues"
     },
-    "version": "0.1.1",
+    "version": "0.1.2",
     "dependencies": {
         "bower": "^1.5.2"
     },
