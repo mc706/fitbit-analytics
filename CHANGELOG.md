@@ -13,6 +13,14 @@ This project adheres to [Semantic Versioning](http://semver.org/) and [Keep a Ch
 ### Fixes
 
 
+## [0.1.0] - 2015-09-27
+---
+
+### New
+
+* Added google analytics
+* Deployed
+
 ## [0.0.9] - 2015-09-26
 ---
 
@@ -124,6 +132,7 @@ This project adheres to [Semantic Versioning](http://semver.org/) and [Keep a Ch
 * Setup Flask App
 * Built Basic Templates
 * Setup NPM and Bower
+
 
 
 

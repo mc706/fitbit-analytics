@@ -1,6 +1,6 @@
 import fitbit
 from flask import render_template, flash, redirect, session, url_for, request, jsonify, send_from_directory
-from application import app, db
+from application import application, db
 from models import User
 from random import choice
 from highcharts import Chart
@@ -41,19 +41,19 @@ fitbit_app = oauth.remote_app(
 # Routes
 # ----------------------------
 
-@app.errorhandler(404)
+@application.errorhandler(404)
 def page_not_found(e):
-    app.logger.info('404')
+    # application.logger.info('404')
     return render_template('404.html'), 404
 
 
-@app.errorhandler(500)
+@application.errorhandler(500)
 def page_not_found(e):
-    app.logger.info('404')
+    # application.logger.info('404')
     return render_template('500.html'), 404
 
 
-@app.route('/')
+@application.route('/')
 def index():
     if not session.get('fitbit_keys', False):
         return redirect(url_for('intro'))
@@ -75,14 +75,14 @@ def index():
                            weights=weights, weight_unit=weight_unit)
 
 
-@app.route('/profile')
+@application.route('/profile')
 def profile():
     if not session.get('fitbit_keys', False):
         return redirect(url_for('intro'))
     return render_template('profile.html')
 
 
-@app.route('/steps')
+@application.route('/steps')
 def steps():
     if not session.get('fitbit_keys', False):
         return redirect(url_for('intro'))
@@ -167,14 +167,14 @@ def steps():
     return render_template('statpage.html', title="Steps", statsbar=statsbar, charts=charts)
 
 
-@app.route('/calories')
+@application.route('/calories')
 def calories():
     if not session.get('fitbit_keys', False):
         return redirect(url_for('intro'))
     return render_template('calories.html')
 
 
-@app.route('/weight')
+@application.route('/weight')
 def weight():
     if not session.get('fitbit_keys', False):
         return redirect(url_for('intro'))
@@ -245,21 +245,21 @@ def weight():
                            statsbar=statsbar, charts=charts)
 
 
-@app.route('/sleep')
+@application.route('/sleep')
 def sleep():
     if not session.get('fitbit_keys', False):
         return redirect(url_for('intro'))
     return render_template('sleep.html')
 
 
-@app.route('/settings')
+@application.route('/settings')
 def settings():
     if not session.get('fitbit_keys', False):
         return redirect(url_for('intro'))
     return render_template('settings.html')
 
 
-@app.route('/intro')
+@application.route('/intro')
 def intro():
     if session.get("fitbit_keys", False):
         return redirect(url_for('index'))
@@ -271,7 +271,7 @@ def get_fitbit_app_token(token=None):
     return session.get('fitbit_app_token')
 
 
-@app.route('/login')
+@application.route('/login')
 def login():
     """ Start login process
     """
@@ -279,7 +279,7 @@ def login():
         callback=url_for('oauth_authorized', next=request.args.get('next') or request.referrer or None))
 
 
-@app.route('/oauth_authorized')
+@application.route('/oauth_authorized')
 @fitbit_app.authorized_handler
 def oauth_authorized(resp):
     """ Authorize using OAUTH """
@@ -311,10 +311,10 @@ def oauth_authorized(resp):
 
 #
 
-@app.route('/user/<user_id>/drop')
+@application.route('/user/<user_id>/drop')
 def drop_user(user_id):
     """ Drop user from databaase """
-    app.logger.info('delete,request to delete %r' % user_id)
+    application.logger.info('delete,request to delete %r' % user_id)
 
     user = User.query.filter_by(user_id=user_id).first_or_404()
     db.session.delete(user)
@@ -330,7 +330,7 @@ def drop_user(user_id):
     return redirect(url_for('index'))
 
 
-@app.route('/logout')
+@application.route('/logout')
 def logout():
     """ Logout pops session cookie """
     session.pop('fitbit_keys', None)
@@ -341,11 +341,11 @@ def logout():
 # API
 # ----------------------------
 
-@app.route('/u/<user_id>/<resource>/<period>')
+@application.route('/u/<user_id>/<resource>/<period>')
 def get_activity(user_id, resource, period='1w', return_as='json'):
     """ Function to pull data from Fitbit API and return as json or raw specific to activities """
     global dash_resource
-    app.logger.info('resource, %s, %s, %s, %s, %s' %
+    application.logger.info('resource, %s, %s, %s, %s, %s' %
                     (user_id, resource, period, return_as, request.remote_addr))
 
     ''' Use  API to return resource data '''
@@ -415,7 +415,7 @@ def get_activity(user_id, resource, period='1w', return_as='json'):
 # Filters
 # ----------------------------
 
-@app.template_filter()
+@application.template_filter()
 def natural_time(datetime):
     """Filter used to convert Fitbit API's iso formatted text into
     an easy to read humanized format"""
@@ -423,7 +423,7 @@ def natural_time(datetime):
     return a
 
 
-@app.template_filter()
+@application.template_filter()
 def natural_number(number):
     """ Filter used to present integers cleanly """
     a = humanize.intcomma(number)

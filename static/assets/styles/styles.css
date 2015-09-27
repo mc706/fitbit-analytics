@@ -9,6 +9,11 @@ html, body, #wrapper, #page-wrapper {
   min-height: 300px;
   width: 100%; }
 
+img.logo {
+  height: 100%;
+  display: inline;
+  margin: -5px 5px 0 5px; }
+
 #intro section {
   min-height: 95vh;
   position: relative;
