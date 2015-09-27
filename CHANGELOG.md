@@ -8,10 +8,8 @@ This project adheres to [Semantic Versioning](http://semver.org/) and [Keep a Ch
 
 ### New
 
-### Changes
-
-### Fixes
-
+* Added google analytics
+* Deployed
 
 ## [0.0.9] - 2015-09-26
 ---
