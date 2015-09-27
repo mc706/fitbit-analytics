@@ -10,15 +10,15 @@ import json
 import humanize
 import dateutil.parser
 from numpy import average
-
+from config import get_var
 try:
     from secrets import keys as SECRETS
 except ImportError:
     SECRETS = {}
 
-MY_CONSUMER_KEY = SECRETS.get("CONSUMER_KEY", False) or os.environ.get('CONSUMER_KEY')
-MY_CONSUMER_SECRET = SECRETS.get("CONSUMER_SECRET", False) or os.environ.get('CONSUMER_SECRET')
-MY_EMAIL_ADDRESS = SECRETS.get("EMAIL_USER", False) or os.environ.get('EMAIL_USER')
+MY_CONSUMER_KEY = SECRETS.get("CONSUMER_KEY", False) or get_var('CONSUMER_KEY') or None
+MY_CONSUMER_SECRET = SECRETS.get("CONSUMER_SECRET", False) or get_var('CONSUMER_SECRET') or None
+MY_EMAIL_ADDRESS = SECRETS.get("EMAIL_USER", False) or get_var('EMAIL_USER') or None
 
 CONVERSION = {
     "en_US": "Pounds"
