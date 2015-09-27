@@ -7,6 +7,7 @@ from config import DEBUG
 application = Flask(__name__)
 
 application.config.from_object('config')
+from views import *
 
 if not DEBUG:
     toolbar = DebugToolbarExtension(application)
