@@ -1,4 +1,4 @@
-# Fitbit Analytics
+# Fit Analytics
 
-A Deep Dive Statistical Analysis of Fitbit Data
+A Deep Dive Statistical Analysis of Fitness Data
 
